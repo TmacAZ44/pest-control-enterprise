@@ -1,0 +1,268 @@
+// Enterprise pest-control platform.
+// PostgreSQL via Prisma. Apply with: npx prisma db push
+// Requires DATABASE_URL (see .env.example).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  TECHNICIAN
+  CUSTOMER
+}
+
+enum ServiceCategory {
+  RESIDENTIAL
+  COMMERCIAL
+  TERMITE
+  RODENT
+  WILDLIFE
+}
+
+enum PropertyType {
+  RESIDENTIAL
+  COMMERCIAL
+}
+
+enum PestType {
+  ANTS
+  RODENTS
+  TERMITES
+  BED_BUGS
+  MOSQUITOES
+  WILDLIFE
+  OTHER
+}
+
+enum ServiceFrequency {
+  ONE_TIME
+  MONTHLY
+  QUARTERLY
+}
+
+enum AppointmentStatus {
+  REQUESTED
+  CONFIRMED
+  EN_ROUTE
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum QuoteStatus {
+  NEW
+  CONTACTED
+  QUOTED
+  WON
+  LOST
+  EXPIRED
+}
+
+enum InvoiceStatus {
+  DRAFT
+  OPEN
+  PAID
+  VOID
+  UNCOLLECTIBLE
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  PAID
+  FAILED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  phone        String?
+  role         Role     @default(CUSTOMER)
+  passwordHash String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  technicianProfile    TechnicianProfile?
+  customerProfile      CustomerProfile?
+  assignedAppointments Appointment[]     @relation("AssignedTechnician")
+
+  @@index([role])
+}
+
+model TechnicianProfile {
+  id            String            @id @default(cuid())
+  userId        String            @unique
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  licenseNumber String
+  specialties   ServiceCategory[]
+  bio           String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  @@index([licenseNumber])
+}
+
+model CustomerProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyName String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  addresses    Address[]
+  quotes       QuoteRequest[]
+  appointments Appointment[]
+  invoices     Invoice[]
+
+  @@index([companyName])
+}
+
+model Address {
+  id         String          @id @default(cuid())
+  customerId String
+  customer   CustomerProfile @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  line1      String
+  line2      String?
+  city       String
+  state      String
+  postalCode String
+  isPrimary  Boolean         @default(false)
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  appointments Appointment[]
+
+  @@index([customerId])
+  @@index([postalCode])
+  @@index([city, state])
+}
+
+model Service {
+  id             String          @id @default(cuid())
+  slug           String          @unique
+  name           String
+  category       ServiceCategory
+  description    String
+  basePriceCents Int
+  depositCents   Int
+  active         Boolean         @default(true)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  appointments Appointment[]
+
+  @@index([category, active])
+}
+
+model Appointment {
+  id              String              @id @default(cuid())
+  customerId      String
+  customer        CustomerProfile     @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  serviceId       String
+  service         Service             @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+  technicianId    String?
+  technician      User?               @relation("AssignedTechnician", fields: [technicianId], references: [id], onDelete: SetNull)
+  addressId       String
+  address         Address             @relation(fields: [addressId], references: [id], onDelete: Restrict)
+  status          AppointmentStatus   @default(REQUESTED)
+  scheduledStart  DateTime
+  scheduledEnd    DateTime
+  notes           String?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  invoices Invoice[]
+  report   ServiceReport?
+
+  @@index([customerId, scheduledStart])
+  @@index([technicianId, scheduledStart])
+  @@index([status, scheduledStart])
+  @@index([addressId])
+  @@index([serviceId])
+}
+
+model QuoteRequest {
+  id              String           @id @default(cuid())
+  customerId      String?
+  customer        CustomerProfile? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  name            String
+  email           String
+  phone           String
+  postalCode      String
+  propertyType    PropertyType
+  squareFootage   Int
+  pests           PestType[]
+  frequency       ServiceFrequency
+  status          QuoteStatus      @default(NEW)
+  estimatedLowCents  Int?
+  estimatedHighCents Int?
+  notes           String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@index([status, createdAt])
+  @@index([email])
+  @@index([postalCode])
+  @@index([customerId])
+}
+
+model Invoice {
+  id            String          @id @default(cuid())
+  number        String          @unique
+  customerId    String
+  customer      CustomerProfile @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  appointmentId String?
+  appointment   Appointment?    @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
+  amountCents   Int
+  status        InvoiceStatus   @default(OPEN)
+  dueDate       DateTime
+  description   String
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  payments Payment[]
+
+  @@index([customerId, status])
+  @@index([status, dueDate])
+  @@index([appointmentId])
+}
+
+model Payment {
+  id                      String        @id @default(cuid())
+  invoiceId               String
+  invoice                 Invoice       @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  amountCents             Int
+  status                  PaymentStatus @default(PENDING)
+  stripePaymentIntentId   String?       @unique
+  stripeCheckoutSessionId String?       @unique
+  createdAt               DateTime      @default(now())
+  updatedAt               DateTime      @updatedAt
+
+  @@index([invoiceId])
+  @@index([status, createdAt])
+}
+
+model ServiceReport {
+  id             String      @id @default(cuid())
+  appointmentId  String      @unique
+  appointment    Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  summary        String
+  findings       String
+  productsUsed   String
+  technicianName String
+  completedOn    DateTime
+  createdAt      DateTime    @default(now())
+
+  @@index([completedOn])
+}
