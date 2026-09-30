@@ -1,28 +1,46 @@
 import Image from "next/image";
 import Link from "next/link";
-import { company } from "@/lib/company";
 import { cn } from "@/lib/utils";
+
+export const logo = {
+  src: "/revup-logo.jpg",
+  width: 1024,
+  height: 682,
+  alt: "RevUp Consulting Arizona, healthcare marketing. More patients. Stronger practices. Greater impact.",
+};
+
+const frames = {
+  header: "h-24 w-36 sm:h-32 sm:w-48",
+  footer: "h-auto w-full",
+};
 
 export function BrandLockup({
   className,
-  inverted = false,
+  size = "header",
+  onClick,
 }: {
   className?: string;
-  inverted?: boolean;
+  size?: keyof typeof frames;
+  onClick?: () => void;
 }) {
   return (
-    <Link href="/" className={cn("inline-flex items-center gap-2.5", className)}>
+    <Link
+      href="/"
+      onClick={onClick}
+      className={cn(
+        "rounded-sm",
+        size === "footer" ? "mx-auto flex w-full max-w-sm sm:max-w-md" : "inline-flex",
+        className,
+      )}
+    >
       <Image
-        src="/logo.png"
-        alt=""
-        width={44}
-        height={44}
-        priority
-        className="h-11 w-11 rounded-md bg-white object-contain"
+        src={logo.src}
+        alt={logo.alt}
+        width={logo.width}
+        height={logo.height}
+        priority={size === "header"}
+        className={frames[size]}
       />
-      <span className={cn("font-display text-xl leading-none tracking-tight", inverted && "text-white")}>
-        {company.name}
-      </span>
     </Link>
   );
 }

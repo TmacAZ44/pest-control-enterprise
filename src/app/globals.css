@@ -4,42 +4,50 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #071833;
+  --foreground: #1c2430;
   --card: #ffffff;
-  --card-foreground: #071833;
-  --brand: #071833;
+  --card-foreground: #1c2430;
+  --brand: #147f90;
+  --brand-strong: #0e6574;
   --brand-foreground: #ffffff;
-  --primary: #071833;
+  --primary: #147f90;
   --primary-foreground: #ffffff;
-  --accent: #39ff14;
-  --accent-foreground: #071833;
-  --safety: #39ff14;
-  --safety-foreground: #071833;
-  --muted: #f4f7fb;
-  --muted-foreground: #3d5270;
-  --border: #d5deea;
-  --ring: #39ff14;
-  --shadow: 0 18px 50px rgba(7, 24, 51, 0.12);
-  --radius: 0.85rem;
+  --accent: #147f90;
+  --accent-foreground: #ffffff;
+  --safety: #147f90;
+  --safety-foreground: #ffffff;
+  --script: #1e94a6;
+  --soft: #e7f5f7;
+  --ink: #1c2430;
+  --muted: #f4f7f8;
+  --muted-foreground: #4a5562;
+  --border: #d7e0e4;
+  --ring: #0c3d48;
+  --shadow: 0 18px 50px rgba(20, 80, 96, 0.1);
+  --radius: 0.35rem;
 }
 
 .dark {
-  --background: #040c18;
-  --foreground: #ffffff;
-  --card: #0c1c33;
-  --card-foreground: #ffffff;
-  --brand: #071833;
-  --brand-foreground: #ffffff;
-  --primary: #ffffff;
-  --primary-foreground: #071833;
-  --accent: #39ff14;
-  --accent-foreground: #071833;
-  --safety: #39ff14;
-  --safety-foreground: #071833;
-  --muted: #10243d;
-  --muted-foreground: #d5e2f2;
-  --border: #1c3554;
-  --ring: #39ff14;
+  --background: #07161a;
+  --foreground: #f4fbfb;
+  --card: #0d2429;
+  --card-foreground: #f4fbfb;
+  --brand: #7fd0db;
+  --brand-strong: #b7e7ee;
+  --brand-foreground: #062126;
+  --primary: #7fd0db;
+  --primary-foreground: #062126;
+  --accent: #7fd0db;
+  --accent-foreground: #062126;
+  --safety: #7fd0db;
+  --safety-foreground: #062126;
+  --script: #8fd8e2;
+  --soft: #12343b;
+  --ink: #f4fbfb;
+  --muted: #102a30;
+  --muted-foreground: #c5d5da;
+  --border: #1d424a;
+  --ring: #b7e7ee;
   --shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
 }
 
@@ -49,6 +57,7 @@
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-brand: var(--brand);
+  --color-brand-strong: var(--brand-strong);
   --color-brand-foreground: var(--brand-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
@@ -56,12 +65,16 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-safety: var(--safety);
   --color-safety-foreground: var(--safety-foreground);
+  --color-script: var(--script);
+  --color-soft: var(--soft);
+  --color-ink: var(--ink);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
   --color-ring: var(--ring);
-  --font-sans: var(--font-manrope);
-  --font-display: var(--font-source-serif);
+  --font-sans: var(--font-inter), "Segoe UI", sans-serif;
+  --font-display: var(--font-playfair), Georgia, serif;
+  --font-script: var(--font-great-vibes), "Segoe Script", cursive;
   --radius-lg: var(--radius);
 }
 
@@ -76,20 +89,31 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-manrope), "Segoe UI", sans-serif;
+  font-family: var(--font-inter), "Segoe UI", sans-serif;
 }
 
 h1,
 h2,
 .font-display {
-  font-family: var(--font-source-serif), Georgia, serif;
+  font-family: var(--font-playfair), Georgia, serif;
+  font-weight: 500;
+}
+
+.font-script {
+  font-weight: 400;
 }
 
 ::selection {
-  background: color-mix(in srgb, var(--accent) 28%, white);
+  background: color-mix(in srgb, var(--brand) 28%, white);
 }
 
 :focus-visible {
   outline: 2px solid var(--ring);
-  outline-offset: 2px;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
