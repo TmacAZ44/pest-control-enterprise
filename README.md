@@ -1,6 +1,6 @@
 # ABC Shield
 
-Enterprise marketing site and customer portal for a pest control company. The app uses the current Next.js App Router (this scaffold is Next.js 16, the maintained successor to the Next.js 14 App Router), TypeScript, Tailwind CSS v4, Prisma, and shadcn-style UI primitives.
+Enterprise marketing site and customer portal for a pest control company. The app uses the current Next.js App Router (this scaffold is Next.js 16, the maintained successor to the Next.js 14 App Router), TypeScript, Tailwind CSS v4, Prisma, and shadcn-style UI primitives. The live site can be found at https://pest-control-enterprise.vercel.app/ 
 
 ## Stack
 
