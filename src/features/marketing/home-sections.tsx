@@ -1,57 +1,102 @@
-import Image from "next/image";
-import { SectionHeading } from "@/components/marketing/section-heading";
-import { SignatureBand } from "@/components/marketing/signature-band";
-import { StarRating } from "@/components/marketing/star-rating";
-import { features, testimonials } from "@/lib/marketing";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { PageShell } from "@/components/layout/page-shell";
+import { services } from "@/lib/catalog";
+import { serviceAreas } from "@/lib/locations";
+
+const steps = [
+  { title: "Tell us the property", copy: "ZIP code, pest pressure, and whether the site is a home or a facility." },
+  { title: "Get a clear range", copy: "The estimator prices the visit and the annual plan before anyone comes out." },
+  { title: "Book a licensed tech", copy: "Pick an open slot and place a deposit that applies to the invoice." },
+];
 
 export function HomeSections() {
   return (
     <>
-      <section className="bg-white" aria-labelledby="features-heading">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
-          <SectionHeading id="features-heading" kicker="Why RevUp" title="A marketing team that already speaks surgery.">
-            Boutique support for practices that want growth without sounding like a discount clinic.
-          </SectionHeading>
-          <div className="mt-12 grid gap-5 sm:grid-cols-2">
-            {features.map((feature) => {
-              const Icon = feature.icon;
-              return (
-                <article key={feature.title} className="border border-border bg-card p-6 transition-colors duration-200 hover:border-brand">
-                  <span className="inline-flex h-11 w-11 items-center justify-center rounded-sm bg-soft text-brand">
-                    <Icon className="h-5 w-5" aria-hidden />
-                  </span>
-                  <h3 className="mt-5 font-display text-2xl text-ink">{feature.title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{feature.description}</p>
-                </article>
-              );
-            })}
-          </div>
-          <figure className="mt-14">
-            <Image
-              src="/instruments-sharp.jpg"
-              alt="Surgical instruments arranged on a blue sterile drape"
-              width={1280}
-              height={720}
-              className="h-auto w-full"
-            />
-          </figure>
-        </div>
+      <section className="border-b border-border bg-card">
+        <PageShell className="grid gap-6 py-8 sm:grid-cols-3">
+          {[
+            ["Same day", "Emergency windows across the metro"],
+            ["Documented", "Service reports your auditors can file"],
+            ["Multi-site", "One portal for every property you manage"],
+          ].map(([title, copy]) => (
+            <div key={title}>
+              <p className="font-display text-2xl">{title}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{copy}</p>
+            </div>
+          ))}
+        </PageShell>
       </section>
-      <section className="border-t border-border bg-soft" aria-labelledby="proof-heading">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
-          <SectionHeading id="proof-heading" kicker="In their words" title="Practices that wanted a partner, not a content mill." />
-          <div className="mt-12 grid gap-5 md:grid-cols-3">
-            {testimonials.map((item) => (
-              <figure key={item.role} className="flex flex-col border border-border bg-white p-6">
-                <StarRating rating={item.rating} />
-                <blockquote className="mt-4 font-display text-xl leading-snug text-ink">&ldquo;{item.quote}&rdquo;</blockquote>
-                <figcaption className="mt-5 text-sm leading-6 text-muted-foreground">{item.role}</figcaption>
-              </figure>
+
+      <section className="py-16">
+        <PageShell>
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-brand">Services</p>
+              <h2 className="mt-2 font-display text-3xl sm:text-4xl">Programs built for the property, not a generic spray.</h2>
+            </div>
+            <Button href="/services" variant="outline" className="hidden sm:inline-flex">
+              All services
+            </Button>
+          </div>
+          <div className="mt-8 grid gap-4 md:grid-cols-2">
+            {services.map((service) => (
+              <Card key={service.slug} className="p-5 shadow-none">
+                <h3 className="font-display text-2xl">{service.name}</h3>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">{service.summary}</p>
+                <Link href={`/book?service=${service.slug}`} className="mt-4 inline-block text-sm font-semibold text-brand">
+                  Book {service.name.toLowerCase()}
+                </Link>
+              </Card>
             ))}
           </div>
-        </div>
+        </PageShell>
       </section>
-      <SignatureBand />
+
+      <section className="bg-muted/70 py-16">
+        <PageShell>
+          <h2 className="font-display text-3xl sm:text-4xl">How a new account starts</h2>
+          <ol className="mt-8 grid gap-4 md:grid-cols-3">
+            {steps.map((step, index) => (
+              <li key={step.title} className="rounded-lg border border-border bg-card p-5">
+                <p className="text-sm font-semibold text-brand">0{index + 1}</p>
+                <h3 className="mt-2 font-display text-2xl">{step.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">{step.copy}</p>
+              </li>
+            ))}
+          </ol>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Button href="/estimate" variant="safety" size="lg">
+              Build an estimate
+            </Button>
+            <Button href="/book" variant="outline" size="lg">
+              Schedule service
+            </Button>
+          </div>
+        </PageShell>
+      </section>
+
+      <section className="py-16">
+        <PageShell>
+          <h2 className="font-display text-3xl sm:text-4xl">Local crews, named cities</h2>
+          <p className="mt-3 max-w-2xl text-muted-foreground">
+            Each service-area page is written for the pests and properties in that city, with local business schema for search.
+          </p>
+          <ul className="mt-6 flex flex-wrap gap-2">
+            {serviceAreas.map((area) => (
+              <li key={area.slug}>
+                <Link
+                  href={`/locations/${area.slug}`}
+                  className="inline-flex rounded-full border border-border bg-card px-3 py-1.5 text-sm font-semibold hover:border-accent"
+                >
+                  {area.name}, {area.stateCode}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </PageShell>
+      </section>
     </>
   );
 }
